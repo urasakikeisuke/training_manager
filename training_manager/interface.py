@@ -112,7 +112,7 @@ class TrainingManager:
 
         return (True, response["ts"])
 
-    def send_file(self, path: Union[str, Path], title: Optional[str] = None, text: Optional[str] = None) -> Tuple[bool, str]:
+    def send_file(self, path: Union[str, Path], title: Optional[str] = None, text: Optional[str] = None, ts: Optional[str] = None) -> Tuple[bool, str]:
         if isinstance(path, str):
             path = Path(path)
         elif isinstance(path, Path):
@@ -128,7 +128,8 @@ class TrainingManager:
                 file=str(path),
                 channels=self.channel_id,
                 title=title,
-                initial_comment=text
+                initial_comment=text,
+                thread_ts=ts
             )
         except SlackApiError as e:
             return (False, e.response["error"])
@@ -142,8 +143,6 @@ class TrainingManager:
         divider_block = self._get_divider_block()
 
         body_fields = []
-        # body_fields.append(self._get_body_field(f"*開始時刻* : {datetime.now(timezone(timedelta(hours=9))).strftime('%Y-%m-%d %H:%M:%S')}"))
-        # body_fields.append(self._get_body_field(f"*サーバー* : OS=`{os.uname()[0]}` HostName=`{os.uname()[1]}`"))
         if optional is not None:
             for key, value in optional.items():
                 body_fields.append(self._get_body_field(f"*{key}* : {value}"))
