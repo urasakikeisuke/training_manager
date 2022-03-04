@@ -55,7 +55,7 @@ class TrainingManager:
     def _get_body_field(self, text: str) -> Dict[str, str]:
         return {"type": "mrkdwn", "text": text}
 
-    def _get_body_block(self, fields: Union[str, List[Dict[str, str]]]) -> BodyBlock_t:
+    def _get_body_block(self, fields: Sequence[Dict[str, str]]) -> BodyBlock_t:
         block: BodyBlock_t = {
             "type": "section",
             "fields": fields
@@ -63,7 +63,7 @@ class TrainingManager:
 
         return block
 
-    def _get_body_blocks(self, fields_group: Sequence[Union[str, List[Dict[str, str]]]]) -> BodyBlock_t:
+    def _get_body_blocks(self, fields_group: Sequence[Sequence[Dict[str, str]]]) -> BodyBlock_t:
         blocks = []
         for i, fields in enumerate(fields_group):
             if i != 0:
@@ -197,7 +197,6 @@ class TrainingManager:
                     if i > 9: break
                     body_fields.append(self._get_body_field(f"*{key}:* \n{value}"))
                 body_groups.append(body_fields)
-                body_groups.append(self._get_divider_block())
 
         body_blocks = self._get_body_blocks(body_groups)
 
