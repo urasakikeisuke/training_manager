@@ -9,7 +9,7 @@ NAME = 'training_manager'
 AUTHOR = 'Urasaki Keisuke'
 AUTHOR_EMAIL = 'urasakikeisuke.ml@gmail.com'
 LICENSE = 'MIT License'
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 PYTHON_REQUIRES = ">=3.6"
 INSTALL_REQUIRES = [
     "slack-sdk==3.11.2",
