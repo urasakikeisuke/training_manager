@@ -101,14 +101,17 @@ class TrainingManager:
 
         return (True, response["ts"])
 
-    def send_rich_block(self, mobile_text: str, blocks: Sequence[Union[Dict[str, str], Optional[BodyBlock_t], Optional[HeaderBlock_t]]], ts: Optional[str] = None) -> Tuple[bool, str]:
+    def send_rich_block(self, mobile_text: str, blocks: Sequence[Union[Dict[str, str], Optional[BodyBlock_t], Optional[HeaderBlock_t]]], 
+                        ts: Optional[str] = None, reply_broadcast: Optional[bool] = None, icon_emoji: Optional[str] = None) -> Tuple[bool, str]:
 
         try:
             response = self.client.chat_postMessage(
                 channel=self.channel_id,
                 text=mobile_text,
                 blocks=self._compose_blocks(blocks),
-                thread_ts=ts
+                thread_ts=ts,
+                reply_broadcast=reply_broadcast,
+                icon_emoji=icon_emoji
             )
         except SlackApiError as e:
             return (False, e.response["error"])
@@ -179,6 +182,32 @@ class TrainingManager:
         ts = self._ts_holder.get(f"{id}")
 
         result, ts_or_error = self.send_rich_block(mobile_text, [header_block, divider_block, body_block], ts)
+
+        if not result:
+            return (False, ts_or_error)
+
+        if ts is None:
+            self._ts_holder[f"{id}"] = ts_or_error
+
+        return (True, "")
+
+    def send_error(self, id: str, optional: dict) -> Tuple[bool, str]:
+        header_block = self._get_header_block(f"エラーが発生しました --- {id}")
+        mobile_text = f"{id}でエラーが発生しました"
+
+        divider_block = self._get_divider_block()
+
+        body_fields = []
+        if optional is not None:
+            for key, value in optional.items():
+                body_fields.append(self._get_body_field(f"*{key}* : {value}"))
+
+        body_block = self._get_body_block(body_fields)
+
+        ts = self._ts_holder.get(f"{id}")
+
+        result, ts_or_error = self.send_rich_block(mobile_text, [header_block, divider_block, body_block], 
+                                                   ts, reply_broadcast=True, icon_emoji=":warning:")
 
         if not result:
             return (False, ts_or_error)
