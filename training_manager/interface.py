@@ -86,6 +86,9 @@ class TrainingManager:
                 composed_block.append(block)
         
         return composed_block
+
+    def get_ts(self, id: str) -> Optional[str]:
+        return self._ts_holder.get(id)
     
     def send_plain_message(self, message: str) -> Tuple[bool, str]:
         try:
